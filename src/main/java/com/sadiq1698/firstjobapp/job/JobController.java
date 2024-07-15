@@ -1,5 +1,7 @@
 package com.sadiq1698.firstjobapp.job;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,35 +16,39 @@ public class JobController {
     }
 
     //  Get all jobs
-    @GetMapping("/jobs")
-    public List<Job> findAll() {
-        return jobService.findAll();
+    @GetMapping("/job/all")
+    public ResponseEntity<List<Job>> findAll() {
+        return new ResponseEntity<>(jobService.findAll(), HttpStatus.OK);
     }
 
     //  Create a job
     @PostMapping("/job")
-    public String addJob(@RequestBody  Job _job) {
+    public ResponseEntity<String> addJob(@RequestBody  Job _job) {
         jobService.createJob(_job);
-        return "Job Added Successfully";
+        return new ResponseEntity<>("Job Added Successfully", HttpStatus.CREATED);
     }
 
     //  Get a job by ID
-    @GetMapping("/jobs/{id}")
-    public Job findAJob(@PathVariable Long id) {
-        return jobService.getJobyId(id);
+    @GetMapping("/job/{id}")
+    public ResponseEntity<Job> findAJob(@PathVariable Long id) {
+        Job job = jobService.getJobyId(id);
+        if(job != null) return new ResponseEntity<>(job, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    //  Update a job
+    @PutMapping("/job/{id}")
+    public ResponseEntity<String> updateJob(@PathVariable Long id, @RequestBody  Job _job) {
+        boolean isUpdated = jobService.updateJob(id, _job);
+        if (isUpdated) return new ResponseEntity<String>("Job Updated Successfully", HttpStatus.OK);
+        return new ResponseEntity<String>("Failed Updating job", HttpStatus.NOT_FOUND);
+    }
 
-
-//    //  Update a job
-//    @PatchMapping("/job/:id")
-//    public void updateJob(String id) {
-//
-//    }
-//
-//    //  Delete a job
-//    @DeleteMapping("/job/:id")
-//    public void deleteJob(String id) {
-//
-//    }
+    //  Delete a job
+    @DeleteMapping("/job/{id}")
+    public ResponseEntity<String> deleteJob(@PathVariable Long id) {
+        boolean isDeleted = jobService.deleteJob(id);
+        if (isDeleted) return new ResponseEntity<String>("Job Deleted Successfully", HttpStatus.OK);
+        return new ResponseEntity<String>("Failed Deleting job", HttpStatus.NOT_FOUND);
+    }
 }
