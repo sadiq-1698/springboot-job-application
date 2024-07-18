@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 @RestController
+@RequestMapping("/job")
 public class JobController {
     private final JobService jobService;
 

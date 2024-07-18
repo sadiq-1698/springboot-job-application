@@ -1,63 +1,60 @@
 package com.sadiq1698.firstjobapp.job.impl;
 
 import com.sadiq1698.firstjobapp.job.Job;
+import com.sadiq1698.firstjobapp.job.JobRepository;
 import com.sadiq1698.firstjobapp.job.JobService;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class JobServiceImpl implements JobService {
 
-    private final List<Job> listOfJobs = new ArrayList<Job>();
-    private Long newId = 0L;
+    JobRepository jobRepository;
+
+    public JobServiceImpl(JobRepository jobRepository) {
+        this.jobRepository = jobRepository;
+    }
 
     @Override
     public List<Job> findAll() {
-        return listOfJobs;
+        return jobRepository.findAll();
     }
 
     @Override
     public void createJob(Job job) {
-        job.setId(++newId);
-        listOfJobs.add(job);
+        jobRepository.save(job);
     }
 
     @Override
     public boolean deleteJob(Long id) {
-        for (int index = 0; index < listOfJobs.size(); index++) {
-            if (listOfJobs.get(index).getId().equals(id)) {
-                listOfJobs.remove(index);
-                return true;
-            }
+        try {
+            jobRepository.deleteById(id);
+            return true;
+        } catch (Exception e) {
+            return false;
         }
-        return false;
     }
 
     @Override
     public boolean updateJob(Long id, Job job) {
-        for (int index = 0; index < listOfJobs.size(); index++) {
-            if (listOfJobs.get(index).getId().equals(id)) {
-                Job oldJob = listOfJobs.get(index);
-
+        Optional<Job> jobOptional = jobRepository.findById(id);
+            if (jobOptional.isPresent()) {
+                Job oldJob = jobOptional.get();
                 oldJob.setTitle(job.getTitle());
                 oldJob.setDescription(job.getDescription());
                 oldJob.setLocation(job.getLocation());
                 oldJob.setMinSalary(job.getMinSalary());
                 oldJob.setMaxSalary(job.getMaxSalary());
-
+                jobRepository.save(oldJob);
                 return true;
-            }
         }
         return false;
     }
 
     @Override
     public Job getJobyId(Long id) {
-        for (Job job: listOfJobs) {
-            if(job.getId().equals(id)) return job;
-        }
-        return null;
+        return jobRepository.findById(id).orElse(null);
     }
 }
