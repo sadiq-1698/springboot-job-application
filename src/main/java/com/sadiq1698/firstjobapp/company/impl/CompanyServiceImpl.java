@@ -3,7 +3,6 @@ package com.sadiq1698.firstjobapp.company.impl;
 import com.sadiq1698.firstjobapp.company.Company;
 import com.sadiq1698.firstjobapp.company.CompanyRepository;
 import com.sadiq1698.firstjobapp.company.CompanyService;
-import com.sadiq1698.firstjobapp.job.Job;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
